@@ -37,21 +37,6 @@ jobs:
       - name: Build
         run: pnpm build
 
-  security:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
-      - run: pnpm install --frozen-lockfile
-
       - name: npm audit (high-severity CVEs)
         run: pnpm audit --audit-level=high || true
         continue-on-error: true
@@ -63,7 +48,7 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [quality, security]
+    needs: [quality]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: production
